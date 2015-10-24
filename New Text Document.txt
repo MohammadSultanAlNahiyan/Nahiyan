@@ -1,0 +1,161 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data.SqlClient;
+using System.Data;
+
+namespace ConsoleApplication1
+{
+    class Program
+    {
+        static String connectionstring = "Data Source=172.16.2.93;Initial Catalog=13229981_Rana;User ID=13-22998-1;Password=65034828";
+        static void Main(string[] args)
+        {
+
+            do
+            {
+                Console.WriteLine("===================");
+                Console.WriteLine("Query:\t 1");
+                Console.WriteLine("Insert:\t 2");
+                Console.WriteLine("Update:\t 3");
+                Console.WriteLine("Delete:\t 4");
+                Console.WriteLine("Exit:\t 0");
+                Console.WriteLine("====================");
+                Console.Write("Enter Commend: ");
+                string input = Console.ReadLine();
+                
+                
+                switch (input)
+                {
+                    case "1":
+                        Query();
+                        break;
+                    case "2":
+                        Insert();
+                        break;
+                    case "3":
+                        Update();
+                        break;
+                    case "4":
+                        Delete();
+                        break;
+                    case "0":
+                        return;
+
+                }
+                Console.WriteLine("Press Enter to continue....");
+                Console.ReadLine();
+            } while (true);            
+
+        }
+
+        static void Delete()
+        {
+            SqlConnection connection = new SqlConnection(connectionstring);
+            Console.Write("Enter Id: ");
+            int id = int.Parse(Console.ReadLine());
+           
+            string Deletequery = "DELETE Student" + "WHERE ID = @ID";
+            SqlCommand commend = new SqlCommand(Deletequery, connection);
+            SqlParameter idparameter = new SqlParameter("@ID", SqlDbType.Int);
+            idparameter.Value = id;
+            
+            commend.Parameters.Add(idparameter);
+          
+            connection.Open();
+            commend.ExecuteNonQuery();
+            Query();
+            connection.Close();
+        }
+
+        static void Update()
+        {
+            SqlConnection connection = new SqlConnection(connectionstring);
+            Console.Write("Enter Id: ");
+            int id = int.Parse(Console.ReadLine());
+            Console.Write("Enter Name: ");
+            String name = Console.ReadLine();
+
+            string Updatequery = "UPDATE Student SET Name = @Name"+"WHERE ID = @ID";
+            SqlCommand commend = new SqlCommand(Updatequery, connection);
+            SqlParameter idparameter = new SqlParameter("@ID", SqlDbType.Int);
+            idparameter.Value = id;
+            SqlParameter nameparameter = new SqlParameter("@Name", SqlDbType.NVarChar, 50);
+            nameparameter.Value = name;
+            commend.Parameters.Add(idparameter);
+            commend.Parameters.Add(nameparameter);
+
+
+            connection.Open();
+            commend.ExecuteNonQuery();
+            Query();
+            connection.Close();
+        }
+
+        static void Insert()
+        {
+            SqlConnection connection = new SqlConnection(connectionstring);
+            Console.Write("Enter Id: ");
+            int id = int.Parse(Console.ReadLine());
+            Console.Write("Enter Name: ");
+            String name = Console.ReadLine();
+
+            string Insertquery = "INSERT INTO Student (ID, Name)" + "VALUES(@ID, @Name)";
+            SqlCommand commend = new SqlCommand(Insertquery, connection);
+            SqlParameter idparameter = new SqlParameter("@ID", SqlDbType.Int);
+            idparameter.Value = id;
+            SqlParameter nameparameter = new SqlParameter("@Name", SqlDbType.NVarChar, 50);
+            nameparameter.Value = name;
+            commend.Parameters.Add(idparameter);
+            commend.Parameters.Add(nameparameter);
+
+
+            connection.Open();
+            commend.ExecuteNonQuery();
+            Query();
+            connection.Close();
+
+
+        }
+
+        static void Query()
+        {
+            
+            SqlConnection connection = new SqlConnection(connectionstring);
+            string query = "SELECT * FROM STUDENT";
+            SqlDataAdapter da = new SqlDataAdapter(query, connection);
+            DataTable dt = new DataTable();
+            connection.Open();
+            da.Fill(dt);
+            //addData();
+            ShowTable(dt);
+            connection.Close();
+        }
+
+
+        static void ShowTable(DataTable dt)
+        {
+            for (int j = 0; j < dt.Columns.Count;j++ )
+            {
+                Console.WriteLine(dt.Columns[j].ColumnName);
+                Console.Write("\t\t");
+            }
+
+            Console.WriteLine();
+
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                for (int j = 0; j < dt.Columns.Count; j++)
+                {
+                    Console.Write(dt.Rows[i][j]);
+                    Console.Write("\t");
+                }
+
+                Console.WriteLine();
+                
+            }
+
+        }
+    }
+}
